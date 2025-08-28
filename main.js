@@ -1,5 +1,7 @@
 // Embed with
-{/* <script src="https://cdn.jsdelivr.net/gh/al3xius/omni-power-nutrition-planner@main/main.js"></script> */}
+{
+  /* <script src="https://cdn.jsdelivr.net/gh/al3xius/omni-power-nutrition-planner@main/main.js"></script> */
+}
 
 // Config
 const energyFactors = {
@@ -13,7 +15,7 @@ const referenceWeight = 75;
 
 // Helpers
 async function delay(ms) {
-    return new Promise((res) => setTimeout(res, ms));
+  return new Promise((res) => setTimeout(res, ms));
 }
 
 function convertDurationToMinutes(duration) {
@@ -108,30 +110,7 @@ function calculateEnergy(answers) {
 }
 
 async function main() {
-  //await delay(5000);
-  if (typeof window !== undefined) {
-    console.log("Registering event listener");
-    window.addEventListener("lantern:display_results", (e) => {
-      const {
-        results,
-        content_block_results,
-        answers,
-        email,
-        first_name,
-        marketing_consent,
-      } = e.detail;
-
-      console.log("Start");
-      const energy_result = calculateEnergy(answers);
-      console.log(energy_result);
-
-      document
-        .getElementById("perfect-product-finder")
-        .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
-        energy_result
-      )}`;
-    });
-  } else {
+  if (typeof window === "undefined") {
     const answers = {
       first_name: "Alex",
       gender: "male",
@@ -156,6 +135,28 @@ async function main() {
     };
     console.log("Running in Debug Mode!");
     console.log(calculateEnergy(answers));
+  } else {
+    console.log("Registering event listener");
+    window.addEventListener("lantern:display_results", (e) => {
+      const {
+        results,
+        content_block_results,
+        answers,
+        email,
+        first_name,
+        marketing_consent,
+      } = e.detail;
+
+      console.log("Start");
+      const energy_result = calculateEnergy(answers);
+      console.log(energy_result);
+
+      document
+        .getElementById("perfect-product-finder")
+        .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
+        energy_result
+      )}`;
+    });
   }
 }
 
