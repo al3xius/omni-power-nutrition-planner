@@ -239,8 +239,6 @@ async function main() {
 
     window.addEventListener("lantern:display_question", async (e) => {
       const { id, title, description, type, options, isRequired } = e.detail;
-      console.log(e);
-      console.log({ id, title, description, type, options, isRequired });
 
       // register event listener
       if (type === "INPUT_ONE_LINE_TEXT") {
@@ -261,10 +259,19 @@ async function main() {
               valElement = document.createElement("div");
               valElement.id = "validationMessage";
               valElement.style.color = "red";
+              valElement.style.marginTop = "10px";
               input.parentNode.insertBefore(valElement, input.nextSibling);
           }
   
           valElement.innerText = validation ? validation : "";
+
+          // Disable button
+          const buttonElement = document
+            .getElementById("perfect-product-finder")
+            .shadowRoot.querySelector("button.input-button");
+          if (buttonElement) {
+            buttonElement.disabled = validation;
+          }
         });
       }
     });
