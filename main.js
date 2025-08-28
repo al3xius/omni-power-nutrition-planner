@@ -1,26 +1,3 @@
-const answers = {
-  first_name: "Alex",
-  gender: "male",
-  age: "25",
-  weight: "200",
-  height: "185",
-  sport_level: "beginner",
-  traininghours: "2",
-  goal: "?",
-  sport_type: "triathlon",
-  triathlon_distance: "olympic",
-  duration_swim: "24:00",
-  duration_bike: "02:00",
-  duration_run: "01:00",
-  cramps: "yes",
-  sweating: "middle",
-  gi_problems: "some",
-  current_nutrition: "Gels,Elektrolyte",
-  coffein_in_race: "Nur im Rennen",
-  main_goal: "persönliche Bestzeit",
-  race_problems: "Hungerast / Energieeinbruch",
-};
-
 // Config
 const energyFactors = {
   "sport_level:beginner": -2,
@@ -32,7 +9,7 @@ const energyFactors = {
 const referenceWeight = 75;
 
 // Helpers
-const delay = ms => new Promise(res => setTimeout(res, ms));
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 function convertDurationToMinutes(duration) {
   if (typeof duration !== "string") return 0;
@@ -125,35 +102,56 @@ function calculateEnergy(answers) {
   return results;
 }
 
-
 async function main() {
-    await delay(5000);
-    if (typeof window === undefined) {
-      console.log("Registering event listener");
-      window.addEventListener("lantern:display_results", (e) => {
-        const {
-          results,
-          content_block_results,
-          answers,
-          email,
-          first_name,
-          marketing_consent,
-        } = e.detail;
-    
-        console.log("Start");
-        const energy_result = calculateEnergy(answers);
-        console.log(energy_result);
-    
-        document
-          .getElementById("perfect-product-finder")
-          .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
-          energy_result
-        )}`;
-      });
-    } else {
-      console.log("Running in Debug Mode!");
-      console.log(calculateEnergy(answers));
-    }
+  await delay(5000);
+  if (typeof window === undefined) {
+    console.log("Registering event listener");
+    window.addEventListener("lantern:display_results", (e) => {
+      const {
+        results,
+        content_block_results,
+        answers,
+        email,
+        first_name,
+        marketing_consent,
+      } = e.detail;
+
+      console.log("Start");
+      const energy_result = calculateEnergy(answers);
+      console.log(energy_result);
+
+      document
+        .getElementById("perfect-product-finder")
+        .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
+        energy_result
+      )}`;
+    });
+  } else {
+    const answers = {
+      first_name: "Alex",
+      gender: "male",
+      age: "25",
+      weight: "200",
+      height: "185",
+      sport_level: "beginner",
+      traininghours: "2",
+      goal: "?",
+      sport_type: "triathlon",
+      triathlon_distance: "olympic",
+      duration_swim: "24:00",
+      duration_bike: "02:00",
+      duration_run: "01:00",
+      cramps: "yes",
+      sweating: "middle",
+      gi_problems: "some",
+      current_nutrition: "Gels,Elektrolyte",
+      coffein_in_race: "Nur im Rennen",
+      main_goal: "persönliche Bestzeit",
+      race_problems: "Hungerast / Energieeinbruch",
+    };
+    console.log("Running in Debug Mode!");
+    console.log(calculateEnergy(answers));
+  }
 }
 
 main();
