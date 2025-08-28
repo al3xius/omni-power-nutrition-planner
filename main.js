@@ -21,6 +21,7 @@ const answers = {
   race_problems: "Hungerast / Energieeinbruch",
 };
 
+// Config
 const energyFactors = {
   "sport_level:beginner": -2,
   "sport_level:intermediate": 0,
@@ -29,6 +30,9 @@ const energyFactors = {
 };
 
 const referenceWeight = 75;
+
+// Helpers
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 function convertDurationToMinutes(duration) {
   if (typeof duration !== "string") return 0;
@@ -56,6 +60,7 @@ function convertMinutesToHours(duration) {
   return hours;
 }
 
+// Logic
 function aggregateAnswers(answers, factors) {
   let score = 0;
   for (const [key, value] of Object.entries(answers)) {
@@ -120,29 +125,35 @@ function calculateEnergy(answers) {
   return results;
 }
 
-if (typeof window === undefined) {
-  console.log("Registering event listener");
-  window.addEventListener("lantern:display_results", (e) => {
-    const {
-      results,
-      content_block_results,
-      answers,
-      email,
-      first_name,
-      marketing_consent,
-    } = e.detail;
 
-    console.log("Start");
-    const energy_result = calculateEnergy(answers);
-    console.log(energy_result);
-
-    document
-      .getElementById("perfect-product-finder")
-      .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
-      energy_result
-    )}`;
-  });
-} else {
-  console.log("Running in Debug Mode!");
-  console.log(calculateEnergy(answers));
+async function main() {
+    await delay(1000);
+    if (typeof window === undefined) {
+      console.log("Registering event listener");
+      window.addEventListener("lantern:display_results", (e) => {
+        const {
+          results,
+          content_block_results,
+          answers,
+          email,
+          first_name,
+          marketing_consent,
+        } = e.detail;
+    
+        console.log("Start");
+        const energy_result = calculateEnergy(answers);
+        console.log(energy_result);
+    
+        document
+          .getElementById("perfect-product-finder")
+          .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
+          energy_result
+        )}`;
+      });
+    } else {
+      console.log("Running in Debug Mode!");
+      console.log(calculateEnergy(answers));
+    }
 }
+
+main();
