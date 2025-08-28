@@ -104,7 +104,7 @@ function calculateEnergy(answers) {
 
 async function main() {
   await delay(5000);
-  if (typeof window === undefined) {
+  if (! typeof window === undefined) {
     console.log("Registering event listener");
     window.addEventListener("lantern:display_results", (e) => {
       const {
