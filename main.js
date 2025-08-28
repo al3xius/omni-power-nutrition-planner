@@ -13,9 +13,87 @@ const energyFactors = {
 
 const referenceWeight = 75;
 
+// Input Config
+const validationConfig = {
+  Alter: {
+    type: "number",
+    min: 0,
+    max: 150,
+  },
+  "Gewicht in kg": {
+    type: "number",
+    min: 30,
+    max: 300,
+  },
+  "Größe in cm": {
+    type: "number",
+    min: 100,
+    max: 250,
+  },
+  "Dauer Rad": {
+    type: "duration"
+  },
+  "Dauer Schwimmen": {
+    type: "duration"
+  },
+  "Dauer Laufen": {
+    type: "duration"
+  }
+};
+
 // Helpers
 async function delay(ms) {
   return new Promise((res) => setTimeout(res, ms));
+}
+
+function waitForElement(id) {
+  return new Promise((resolve) => {
+    if (
+      document
+        .getElementById("perfect-product-finder")
+        .shadowRoot.getElementById(id)
+    ) {
+      return resolve(
+        document
+          .getElementById("perfect-product-finder")
+          .shadowRoot.getElementById(id)
+      );
+    }
+
+    // loop until element is found
+    const interval = setInterval(() => {
+      const element = document
+        .getElementById("perfect-product-finder")
+        .shadowRoot.getElementById(id);
+      if (element) {
+        clearInterval(interval);
+        resolve(element);
+      }
+    }, 100);
+  });
+}
+
+// Input Validators
+function validateInput(input, config) {
+  if (!input) return false;
+
+  const { type } = config;
+
+  if (type === "number") {
+    const { min, max } = config;
+    const value = Number(input);
+    if (isNaN(value)) return "Bitte nur Zahlen eingeben!";
+    if (min !== undefined && value < min)
+      return `Bitte mindestens ${min} eingeben!`;
+    if (max !== undefined && value > max)
+      return `Bitte höchstens ${max} eingeben!`;
+  }
+  if (type === "duration") {
+    const value = convertDurationToMinutes(input);
+    if (!value) return "Bitte eine gültige Dauer eingeben! Format: hh:mm";
+  }
+
+  return false;
 }
 
 function convertDurationToMinutes(duration) {
@@ -27,6 +105,7 @@ function convertDurationToMinutes(duration) {
     return parts[0];
   } else if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
     // HH:MM format
+    if (parts[0] < 0 || parts[1] < 0 || parts[1] >= 60) return 0;
     return parts[0] * 60 + parts[1];
   }
   // Invalid input
@@ -136,7 +215,7 @@ async function main() {
     console.log("Running in Debug Mode!");
     console.log(calculateEnergy(answers));
   } else {
-    console.log("Registering event listener");
+    console.log("Registering event listeners");
     window.addEventListener("lantern:display_results", (e) => {
       const {
         results,
@@ -156,6 +235,38 @@ async function main() {
         .shadowRoot.getElementById("answers").innerText = `${JSON.stringify(
         energy_result
       )}`;
+    });
+
+    window.addEventListener("lantern:display_question", async (e) => {
+      const { id, title, description, type, options, isRequired } = e.detail;
+      console.log(e);
+      console.log({ id, title, description, type, options, isRequired });
+
+      // register event listener
+      if (type === "INPUT_ONE_LINE_TEXT") {
+        const input = await waitForElement(`customInput`);
+        if (!input) return;
+
+        input.addEventListener("input", (e) => {
+          const validation = validationConfig[title]
+            ? validateInput(e.target.value, validationConfig[title])
+            : false;
+
+          // Update validation message
+          let valElement = document
+          .getElementById("perfect-product-finder")
+          .shadowRoot.getElementById("validationMessage");
+          if (!valElement) {
+              // Create
+              valElement = document.createElement("div");
+              valElement.id = "validationMessage";
+              valElement.style.color = "red";
+              input.parentNode.insertBefore(valElement, input.nextSibling);
+          }
+  
+          valElement.innerText = validation ? validation : "";
+        });
+      }
     });
   }
 }
