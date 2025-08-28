@@ -120,8 +120,8 @@ function calculateEnergy(answers) {
   return results;
 }
 
-
 if (typeof window === undefined) {
+  console.log("Registering event listener");
   window.addEventListener("lantern:display_results", (e) => {
     const {
       results,
@@ -143,6 +143,6 @@ if (typeof window === undefined) {
     )}`;
   });
 } else {
-    console.log("Debug");
-    console.log(calculateEnergy(answers));
+  console.log("Running in Debug Mode!");
+  console.log(calculateEnergy(answers));
 }
