@@ -1,3 +1,6 @@
+// Embed with
+{/* <script src="https://cdn.jsdelivr.net/gh/al3xius/omni-power-nutrition-planner@main/main.js"></script> */}
+
 // Config
 const energyFactors = {
   "sport_level:beginner": -2,
@@ -9,7 +12,9 @@ const energyFactors = {
 const referenceWeight = 75;
 
 // Helpers
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+async function delay(ms) {
+    return new Promise((res) => setTimeout(res, ms));
+}
 
 function convertDurationToMinutes(duration) {
   if (typeof duration !== "string") return 0;
@@ -103,7 +108,7 @@ function calculateEnergy(answers) {
 }
 
 async function main() {
-  await delay(5000);
+  //await delay(5000);
   if (typeof window !== undefined) {
     console.log("Registering event listener");
     window.addEventListener("lantern:display_results", (e) => {
